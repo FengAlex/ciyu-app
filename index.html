@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1f4d8a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="词屿"><meta name="description" content="把手写成语笔记变成每天可以抽查的随身词库"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="icon" type="image/png" href="icons/icon-192.png"><title>词屿 · 每天记几个成语</title>
+<!-- iPhone 字体兼容：异步加载开源霞鹜文楷，失败时仍可使用系统字体。 -->
+<link rel="preconnect" href="https://fontsapi.zeoseven.com" crossorigin>
+<link rel="stylesheet" href="https://fontsapi.zeoseven.com/292/main/result.css" media="print" onload="this.media='all'" onerror="this.remove()">
+
 <style>
 :root{--blue:#1f4d8a;--blue2:#376eb8;--dark:#172b46;--ink:#20344c;--muted:#74859c;--line:#dfe7ef;--paper:#fff;--bg:#f3f7fb;--sky:#eaf3ff;--peach:#fff1e8;--mint:#e5f5ee;--shadow:0 8px 26px rgba(40,74,118,.055);--r:21px}
 *{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}body{margin:0;background:#dee7f2;color:var(--dark);font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;overscroll-behavior:none}button,input,textarea,select{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #8fb9fb;outline-offset:2px}input,textarea{font-size:16px}svg{display:block}p{margin:0}
@@ -72,6 +76,17 @@
 .group-detail h3{font-size:19px;margin:0;color:#183a5d}
 .group-detail p{font-size:14px;line-height:1.8;margin-top:7px}
 @media(max-width:350px){.multi-word{font-size:24px}.card-top{gap:3px}.counter{font-size:10px;padding:4px}.tiny-tag{padding:6px 8px}}
+
+/* v3.1 手机字体兼容修复（只修改展示层，不改词库与学习记录）。
+ * 霞鹜文楷在网络字体下载成功时启用；离线则回退本机楷体或宋体/衬线字体。
+ * 不使用外部字体加载作为首页初始化前置条件。 */
+:root{--ciyu-serif:"LXGW WenKai","Kaiti SC","STKaiti","KaiTi","Songti SC","STSong","Noto Serif CJK SC",serif}
+.brandname,.seal,.hero h1,.card-word,.multi-word,.word-tile,.hero:after{font-family:var(--ciyu-serif)}
+.brandname{font-weight:700}
+.hero h1{font-weight:700}
+.card-word,.multi-word{font-weight:700;letter-spacing:.025em;overflow-wrap:anywhere}
+@media(max-width:390px){.multi-word{font-size:clamp(25px,6.9vw,40px)}.card-word{letter-spacing:.02em}}
+
 </style></head><body><div class="app" id="app"><header class="topbar"><div class="branding"><span class="seal">词</span><div><div class="brandname">词屿</div><div class="brand-sub">把好词记在心里</div></div></div><div class="datechip" id="todayLabel"></div></header><main class="content" id="scroller"><section class="tab active" id="tab-home"></section><section class="tab" id="tab-bank"></section><section class="tab" id="tab-notes"></section><section class="tab" id="tab-history"></section><section class="tab" id="tab-me"></section></main><nav class="nav" id="nav" aria-label="主导航"><button data-tab="home" class="active" aria-label="今日学习"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-8h6v8"/></svg><span>今日</span></button><button data-tab="bank" aria-label="词库"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5C4 3.7 4.7 3 5.5 3H20v17H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M4 18.5c0-.8.7-1.5 1.5-1.5H20M8 7h8M8 11h7"/></svg><span>词库</span></button><button data-tab="notes" aria-label="笔记照片"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"/><circle cx="12" cy="13.5" r="3.2"/><path d="M8 6 9.2 3h5.6L16 6"/></svg><span>笔记</span></button><button data-tab="history" aria-label="学习足迹"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3m3 0h3"/></svg><span>足迹</span></button><button data-tab="me" aria-label="设置"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg><span>我的</span></button></nav><div id="modal" class="hidden"></div><div id="toast" class="toast hidden"></div></div>
 <script>
 'use strict';
